@@ -1,13 +1,13 @@
 import time
 import uuid
-from decimal import Decimal
 from datetime import datetime, timezone
+from decimal import Decimal
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from api.model_loader import load_production_model
 from api.database import log_prediction, update_feedback
+from api.model_loader import load_production_model
 
 app = FastAPI(
     title="Toxic Comment Moderation API",

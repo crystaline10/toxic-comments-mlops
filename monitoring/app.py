@@ -4,7 +4,6 @@ import boto3
 import pandas as pd
 import streamlit as st
 
-
 AWS_REGION = "us-east-2"
 TABLE_NAME = "toxic-comment-predictions"
 
@@ -53,7 +52,7 @@ def prepare_dataframe(items):
             "timestamp": item.get("timestamp"),
             "text": item.get("text"),
             "latency_ms": float(
-                item.get("latency_ms", Decimal("0"))
+                item.get("latency_ms", Decimal(0))
             ),
             "feedback_correct": item.get("feedback_correct"),
         }

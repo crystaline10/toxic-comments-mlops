@@ -1,8 +1,8 @@
 import os
 
 import joblib
-import wandb
 
+import wandb
 
 MODEL_ARTIFACT = (
     "crystalmcnama/"

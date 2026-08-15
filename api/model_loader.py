@@ -1,7 +1,6 @@
 import os
 
 import joblib
-
 import wandb
 
 MODEL_ARTIFACT = (

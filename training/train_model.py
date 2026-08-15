@@ -27,7 +27,14 @@ def get_git_commit():
     except subprocess.CalledProcessError:
         return "unknown"
 
+def get_data_version():
+    sha256 = hashlib.sha256()
 
+    with open(DATA_PATH, "rb") as file:
+        for chunk in iter(lambda: file.read(8192), b""):
+            sha256.update(chunk)
+
+    return sha256.hexdigest()
 
 
 CONFIG = {
@@ -38,6 +45,7 @@ CONFIG = {
     "test_size": 0.2,
     "random_state": 42,
     "git_commit": get_git_commit(),
+    "data_version": get_data_version(),
 }
 
 LABEL_COLUMNS = [

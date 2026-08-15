@@ -2,6 +2,8 @@ import os
 import joblib
 import pandas as pd
 import wandb
+import subprocess
+import hashlib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
@@ -16,6 +18,18 @@ MODEL_PATH = os.path.join(MODEL_DIR, "toxic_comment_model.pkl")
 
 WANDB_PROJECT = "toxic-comments"
 
+def get_git_commit():
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            text=True,
+        ).strip()
+    except subprocess.CalledProcessError:
+        return "unknown"
+
+
+
+
 CONFIG = {
     "max_features": 50000,
     "ngram_range": (1, 2),
@@ -23,6 +37,7 @@ CONFIG = {
     "class_weight": "balanced",
     "test_size": 0.2,
     "random_state": 42,
+    "git_commit": get_git_commit(),
 }
 
 LABEL_COLUMNS = [

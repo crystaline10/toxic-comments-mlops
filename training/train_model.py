@@ -40,7 +40,7 @@ def get_data_version():
 CONFIG = {
     "max_features": 50000,
     "ngram_range": (1, 2),
-    "C": 1.0,
+    "C": 0.5,
     "class_weight": "balanced",
     "test_size": 0.2,
     "random_state": 42,
@@ -98,7 +98,7 @@ def main():
     run = wandb.init(
         project=WANDB_PROJECT,
         config=CONFIG,
-        name="baseline-logistic-regression",
+        name="logistic-regression-c-0.5",
     )
 
     print("Loading dataset...")

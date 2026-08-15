@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from api.model_loader import load_production_model
-from api.database import log_prediction
+from api.database import log_prediction, update_feedback
 
 app = FastAPI(
     title="Toxic Comment Moderation API",
@@ -29,6 +29,9 @@ LABEL_COLUMNS = [
 class CommentRequest(BaseModel):
     text: str
 
+class FeedbackRequest(BaseModel):
+    request_id: str
+    is_correct: bool
 
 @app.get("/health")
 def health_check():
@@ -66,3 +69,17 @@ def predict(request: CommentRequest):
         "prediction": result,
         "latency_ms": round(latency_ms, 2),
     }
+
+@app.post("/feedback")
+def submit_feedback(request: FeedbackRequest):
+    update_feedback(
+        request_id=request.request_id,
+        is_correct=request.is_correct,
+    )
+
+    return {
+        "status": "feedback recorded",
+        "request_id": request.request_id,
+        "is_correct": request.is_correct,
+    }
+

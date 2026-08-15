@@ -1,8 +1,13 @@
+import time
+import uuid
+from decimal import Decimal
+from datetime import datetime, timezone
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 from api.model_loader import load_production_model
-
+from api.database import log_prediction
 
 app = FastAPI(
     title="Toxic Comment Moderation API",
@@ -29,17 +34,35 @@ class CommentRequest(BaseModel):
 def health_check():
     return {"status": "ok"}
 
-
 @app.post("/predict")
 def predict(request: CommentRequest):
+    start_time = time.perf_counter()
+
     prediction = model.predict([request.text])[0]
+
+    latency_ms = (time.perf_counter() - start_time) * 1000
 
     result = {
         label: int(value)
         for label, value in zip(LABEL_COLUMNS, prediction)
     }
 
-    return {
+    request_id = str(uuid.uuid4())
+    timestamp = datetime.now(timezone.utc).isoformat()
+
+    prediction_record = {
+        "request_id": request_id,
+        "timestamp": timestamp,
         "text": request.text,
         "prediction": result,
+        "latency_ms": Decimal(str(round(latency_ms, 2))),
+    }
+
+    log_prediction(prediction_record)
+
+    return {
+        "request_id": request_id,
+        "text": request.text,
+        "prediction": result,
+        "latency_ms": round(latency_ms, 2),
     }
